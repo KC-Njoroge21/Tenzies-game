@@ -7,11 +7,28 @@ const Master = () => {
   const [numbers, setNumbers] = React.useState(generateRandomNumber())
 
   function rollDice() {
-    setNumbers(generateRandomNumber())
+    setNumbers((prevState) => {
+      return(
+         prevState.map((item) => {
+          return (
+            item.isHeld ? item : {...item, value: Math.ceil(Math.random() * 6)}
+          )
+        })
+      )
+       
+    })
   }
 
   function holdDice(id) {
-    console.log(id)
+    setNumbers((prevState) => {
+      return (
+        prevState.map((item) => {
+         return (
+           item.id === id ?  {...item, isHeld: !item.isHeld} : item
+         )
+        })
+      )
+    })
   }
 
   
@@ -20,12 +37,12 @@ const Master = () => {
    return Array(10).fill(0)
                   .map(() => {
                     return {
-                     value: Math.ceil(Math.random() * 6), isHeld: true, id: nanoid()
+                     value: Math.ceil(Math.random() * 6), isHeld: false, id: nanoid()
                     }
                   })
   }
 
-  const die = numbers.map((item, index) => {
+  const die = numbers.map((item) => {
     return <Die key={item.id} id={item.id} value={item.value} isHeld={item.isHeld} holdDice={() => {holdDice(item.id)}} />
   })
 
@@ -38,7 +55,11 @@ const Master = () => {
 
   return (
     <section className="bg-blue-950 p-4 h-screen flex flex-col justify-center items-center">
-      <div className="bg-[#F5F5F5] h-full rounded-xl max-h-[400px] max-w-[400px] w-full flex flex-col justify-center items-center ">
+      <div className="bg-[#F5F5F5] h-full rounded-xl max-h-[400px] max-w-[400px] w-full flex flex-col justify-center items-center gap-6 p-3 ">
+        <h1 className="text-4xl font-semibold">Tenzies</h1>
+        <p className="text-center">
+          Roll until all dice are the same. Click each die to freeze it at its currrent value between rolls.
+        </p>
         <div className="grid grid-cols-5 grid-rows-2 gap-4">
           {die}
         </div>
